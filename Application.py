@@ -7,7 +7,7 @@ from PIL import Image
 import struct
 from tkinter import messagebox
 from yubihsm import YubiHsm
-from yubihsm.exceptions import YubiHsmAuthenticationError
+from yubihsm.exceptions import YubiHsmAuthenticationError, YubiHsmConnectionError
 
 
 class Application:
@@ -43,6 +43,7 @@ class Application:
     def checkLoginCredentials(self):
         try:
             self.session = self.hsm.create_session_derived(int(self.objectIDEntry.get()), self.passwordEntry.get())
+            self.getOptionsBasedOffAuthenticationKey()
         except ValueError:
             messagebox.showerror(title='Invalid ObjectID', message='Object ID has to be an integer')
         except YubiHsmConnectionError:
@@ -50,6 +51,8 @@ class Application:
         except YubiHsmAuthenticationError:
             messagebox.showerror(title='Invalid Credentials', message='The username or password is incorrect')
 
+    def getOptionsBasedOffAuthenticationKey(self):
+        pass
 
 if __name__ == '__main__':
     app = Application()
