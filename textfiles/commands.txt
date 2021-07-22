@@ -1,0 +1,51 @@
+Echo
+Create Session
+Authenticate Session
+Session Message
+Get Device Info
+Reset Device
+Close Session
+Get Storage Info
+Put Opaque
+Get Opaque
+Put Authentication Key
+Put Asymmetric Key
+Generate Asymmetric Key
+Sign Pkcs1
+List Objects
+Decrypt Pkcs1
+Export Wrapped
+Import Wrapped
+Put Wrap Key
+Get Log Entries
+Get Object Info
+Set Option
+Get Option
+Get Pseudo Random
+Put Hmac Key
+Sign Hmac
+Get Public Key
+Sign Pss
+Sign Ecdsa
+Derive Ecdh
+Delete Object
+Decrypt Oaep
+Generate Hmac Key
+Generate Wrap Key
+Verify Hmac
+Sign Ssh Certificate
+Put Template
+Get Template
+Decrypt Otp
+Create Otp Aead
+Randomize Otp Aead
+Rewrap Otp Aead
+Sign Attestation Certificate
+Put Otp Aead Key
+Generate Otp Aead Key
+Set Log Index
+Wrap Data
+Unwrap Data
+Sign Eddsa
+Blink Device
+Change Authentication Key

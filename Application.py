@@ -5,6 +5,7 @@ import PIL
 from PIL import ImageTk
 from PIL import Image
 import struct
+from Checkbox import Checkbox
 from tkinter import messagebox
 from yubihsm import YubiHsm
 from yubihsm.exceptions import YubiHsmAuthenticationError, YubiHsmConnectionError
@@ -17,9 +18,9 @@ class Application:
         self.GUI_GEOMETRY = "700x300"
         self.IMAGE_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/LC.png"
         self.HSM_URL = "http://127.0.0.1:12345"
-        self.COMMANDS_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/commands.txt"
+        self.COMMANDS_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/textfiles/commands.txt"
         self.commandToWindowMapping = {
-            "Get Device Info": self.getDeviceInfoWindow
+            "Get Device Info": self.getDeviceInfoWindow,
             "Put Authentication Key": self.putAuthKeyWindow}
         self.commandsForHSM = self.getHSMCommands()
         self.hsm = YubiHsm.connect(self.HSM_URL)
@@ -143,7 +144,7 @@ class Application:
         self.passwordEntry.pack()
         instructionsForConfirmPasswordEntry.pack()
         self.confirmPasswordEntry.pack()
-        panel.place(x=70,y=200)
+        self.domainCheckbox = Checkbox(self.putAuthKeyPage)
         self.putAuthKeyPage.mainloop()
 
 def getVersionString(deviceVersion):
