@@ -19,6 +19,9 @@ class Application:
         self.IMAGE_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/LC.png"
         self.HSM_URL = "http://127.0.0.1:12345"
         self.COMMANDS_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/textfiles/commands.txt"
+        self.DOMAINS_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/textfiles/domains.txt"
+        self.CAPABILITIES_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/textfiles/capabilities.txt"
+        self.GUI_FONT = ('Helvetica',10,'bold')
         self.commandToWindowMapping = {
             "Get Device Info": self.getDeviceInfoWindow,
             "Put Authentication Key": self.putAuthKeyWindow}
@@ -125,17 +128,23 @@ class Application:
         self.putAuthKeyPage = tk.Toplevel()
         self.putAuthKeyPage.title("Put Authentication Key")
         self.putAuthKeyPage.resizable(0,0)
-        self.putAuthKeyPage.geometry(self.GUI_GEOMETRY)
+        self.putAuthKeyPage.geometry("1600x1600")
+        scrollbar = tk.Scrollbar(self.putAuthKeyPage)
+        scrollbar.pack(side='right',fill='y')
         img = ImageTk.PhotoImage(Image.open(self.IMAGE_PATH))
         panel = tk.Label(self.putAuthKeyPage,image=img)
         instructionForPasswordEntry = tk.Label(self.putAuthKeyPage, text="Enter password for Auth Key:")
         instructionsForConfirmPasswordEntry = tk.Label(self.putAuthKeyPage, text="Confirm Password:")
         instructionsForObjectIDEntry = tk.Label(self.putAuthKeyPage,text="Enter Object ID (decimal format):")
         instructionsForLabel = tk.Label(self.putAuthKeyPage, text="Enter Label For Object")
+        domainLabel = tk.Label(self.putAuthKeyPage, text="Domains",font=self.GUI_FONT)
+        capabilityLabel = tk.Label(self.putAuthKeyPage, text="Capabilities",font=self.GUI_FONT)
+        delelgatedCapabilitiesLabel = tk.Label(self.putAuthKeyPage, text="Delegated Capabilities",font=self.GUI_FONT)
         self.passwordEntry = tk.Entry(self.putAuthKeyPage, show='*')
         self.confirmPasswordEntry = tk.Entry(self.putAuthKeyPage, show='*')
         self.objectIDEntryForPutAuthKey = tk.Entry(self.putAuthKeyPage)
         self.labelForPutAuthKey = tk.Entry(self.putAuthKeyPage)
+        submitForPutAuthKey = tk.Button(self.putAuthKeyPage, text="Submit", font=self.GUI_FONT, command=self.addAuthKeyToHSM)
         instructionsForLabel.pack()
         self.labelForPutAuthKey.pack()
         instructionsForObjectIDEntry.pack()
@@ -144,8 +153,19 @@ class Application:
         self.passwordEntry.pack()
         instructionsForConfirmPasswordEntry.pack()
         self.confirmPasswordEntry.pack()
-        self.domainCheckbox = Checkbox(self.putAuthKeyPage)
+        self.checkboxes = Checkbox(self.putAuthKeyPage)
+        self.checkboxes.generateDomainCheckboxes(startx=70,starty=200,incrementx=40,incrementy=30,numRows=3)
+        self.checkboxes.generateCapabilitiesCheckboxes(startx=70,starty=400,incrementx=200,incrementy=30,numRows=12)
+        self.checkboxes.generateCapabilitiesCheckboxes(startx=70,starty=1000,incrementx=200,incrementy=30,numRows=12)
+        domainLabel.place(x=70,y=180)
+        capabilityLabel.place(x=70,y=380)
+        delelgatedCapabilitiesLabel.place(x=70,y=980)
+        panel.place(x=500,y=1500)
+        submitForPutAuthKey.place(x=1300,y=1500)
         self.putAuthKeyPage.mainloop()
+
+    def addAuthKeyToHSM(self):
+        pass
 
 def getVersionString(deviceVersion):
     versionString = "Device Version: "

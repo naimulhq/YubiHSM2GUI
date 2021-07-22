@@ -50,6 +50,3 @@ class Checkbox:
             else:
                 yposition += incrementy
             self.variablesForCapabilitiesCheckbox.append(var)
-
-
-
