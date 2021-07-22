@@ -9,6 +9,7 @@ from tkinter import messagebox
 from yubihsm import YubiHsm
 from yubihsm.exceptions import YubiHsmAuthenticationError, YubiHsmConnectionError
 from yubihsm.defs import OBJECT
+from yubihsm.objects import AuthenticationKey
 
 class Application:
     
@@ -17,7 +18,9 @@ class Application:
         self.IMAGE_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/LC.png"
         self.HSM_URL = "http://127.0.0.1:12345"
         self.COMMANDS_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/commands.txt"
-        self.commandToWindowMapping = {"Get Device Info": self.getDeviceInfoWindow}
+        self.commandToWindowMapping = {
+            "Get Device Info": self.getDeviceInfoWindow
+            "Put Authentication Key": self.putAuthKeyWindow}
         self.commandsForHSM = self.getHSMCommands()
         self.hsm = YubiHsm.connect(self.HSM_URL)
         self.createLoginPage()
@@ -116,6 +119,32 @@ class Application:
         scrollbar.config(command=deviceInfoText.yview)
         panel.place(x=70,y=200)
         self.deviceInfoPage.mainloop()
+
+    def putAuthKeyWindow(self):
+        self.putAuthKeyPage = tk.Toplevel()
+        self.putAuthKeyPage.title("Put Authentication Key")
+        self.putAuthKeyPage.resizable(0,0)
+        self.putAuthKeyPage.geometry(self.GUI_GEOMETRY)
+        img = ImageTk.PhotoImage(Image.open(self.IMAGE_PATH))
+        panel = tk.Label(self.putAuthKeyPage,image=img)
+        instructionForPasswordEntry = tk.Label(self.putAuthKeyPage, text="Enter password for Auth Key:")
+        instructionsForConfirmPasswordEntry = tk.Label(self.putAuthKeyPage, text="Confirm Password:")
+        instructionsForObjectIDEntry = tk.Label(self.putAuthKeyPage,text="Enter Object ID (decimal format):")
+        instructionsForLabel = tk.Label(self.putAuthKeyPage, text="Enter Label For Object")
+        self.passwordEntry = tk.Entry(self.putAuthKeyPage, show='*')
+        self.confirmPasswordEntry = tk.Entry(self.putAuthKeyPage, show='*')
+        self.objectIDEntryForPutAuthKey = tk.Entry(self.putAuthKeyPage)
+        self.labelForPutAuthKey = tk.Entry(self.putAuthKeyPage)
+        instructionsForLabel.pack()
+        self.labelForPutAuthKey.pack()
+        instructionsForObjectIDEntry.pack()
+        self.objectIDEntryForPutAuthKey.pack()
+        instructionForPasswordEntry.pack()
+        self.passwordEntry.pack()
+        instructionsForConfirmPasswordEntry.pack()
+        self.confirmPasswordEntry.pack()
+        panel.place(x=70,y=200)
+        self.putAuthKeyPage.mainloop()
 
 def getVersionString(deviceVersion):
     versionString = "Device Version: "
