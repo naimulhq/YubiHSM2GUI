@@ -10,16 +10,26 @@ from yubihsm import YubiHsm
 from yubihsm.exceptions import YubiHsmAuthenticationError, YubiHsmConnectionError
 from yubihsm.defs import OBJECT
 
-
 class Application:
     
     def __init__(self):
         self.GUI_GEOMETRY = "700x300"
         self.IMAGE_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/LC.png"
         self.HSM_URL = "http://127.0.0.1:12345"
+        self.COMMANDS_PATH = "/home/naimul/NaimulRepo/YubiHSM2Tool/commands.txt"
+        self.commandsForHSM = self.getHSMCommands()
         self.hsm = YubiHsm.connect(self.HSM_URL)
         self.createLoginPage()
-        pass
+        
+    def getHSMCommands(self):
+        self.failedToRetrieveCommands = False
+        try:
+            with open(self.COMMANDS_PATH) as commandsFile:
+                return commandsFile.readlines()
+        except Exception as exceptionText:
+            self.exceptionText = exceptionText
+            self.failedToRetrieveCommands = True
+            
 
     def createLoginPage(self):
         self.loginPage = tk.Tk()
@@ -33,6 +43,9 @@ class Application:
         self.objectIDInstructions = tk.Label(self.loginPage, text="Enter Object ID")
         self.passwordInstructions = tk.Label(self.loginPage, text="Enter Password")
         self.submitButtonForLogin = tk.Button(self.loginPage, text="Submit", command=self.checkLoginCredentials)
+        if self.failedToRetrieveCommands is True:
+            self.submitButtonForLogin['state'] = 'disabled'
+            messagebox.showerror(title="File not Found", message=self.exceptionText)
         self.objectIDInstructions.pack()
         self.objectIDEntry.pack()
         self.passwordInstructions.pack()
@@ -59,15 +72,16 @@ class Application:
         self.commandsPage.geometry(self.GUI_GEOMETRY)
         img = ImageTk.PhotoImage(Image.open(self.IMAGE_PATH))
         panel = tk.Label(self.commandsPage,image=img)
-        self.commandsList = tk.Listbox(self.commandsPage,height=5,width=10)
+        self.commandsList = tk.Listbox(self.commandsPage,height=8,width=30)
         scrollbarForCommands = tk.Scrollbar(self.commandsPage)
-        for values in range(100):
-            self.commandsList.insert("end", values)
+        for command in self.commandsForHSM:
+            self.commandsList.insert("end", command.strip())
         self.commandsList.config(yscrollcommand = scrollbarForCommands.set)
         scrollbarForCommands.config(command = self.commandsList.yview)
-        self.commandsList.place(x=250,y=20)
+        self.commandsList.place(x=240,y=20)
         panel.place(x=70,y=200)
         self.commandsPage.mainloop()
+
 
 
 if __name__ == '__main__':
