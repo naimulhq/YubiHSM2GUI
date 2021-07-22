@@ -8,6 +8,7 @@ import struct
 from tkinter import messagebox
 from yubihsm import YubiHsm
 from yubihsm.exceptions import YubiHsmAuthenticationError, YubiHsmConnectionError
+from yubihsm.defs import OBJECT
 
 
 class Application:
@@ -43,7 +44,7 @@ class Application:
     def checkLoginCredentials(self):
         try:
             self.session = self.hsm.create_session_derived(int(self.objectIDEntry.get()), self.passwordEntry.get())
-            self.getOptionsBasedOffAuthenticationKey()
+            self.chooseCommand()
         except ValueError:
             messagebox.showerror(title='Invalid ObjectID', message='Object ID has to be an integer')
         except YubiHsmConnectionError:
@@ -51,8 +52,23 @@ class Application:
         except YubiHsmAuthenticationError:
             messagebox.showerror(title='Invalid Credentials', message='The username or password is incorrect')
 
-    def getOptionsBasedOffAuthenticationKey(self):
-        pass
+    def chooseCommand(self):
+        self.commandsPage = tk.Toplevel()
+        self.commandsPage.title('YubiHSM Commands')
+        self.commandsPage.resizable(0,0)
+        self.commandsPage.geometry(self.GUI_GEOMETRY)
+        img = ImageTk.PhotoImage(Image.open(self.IMAGE_PATH))
+        panel = tk.Label(self.commandsPage,image=img)
+        self.commandsList = tk.Listbox(self.commandsPage,height=5,width=10)
+        scrollbarForCommands = tk.Scrollbar(self.commandsPage)
+        for values in range(100):
+            self.commandsList.insert("end", values)
+        self.commandsList.config(yscrollcommand = scrollbarForCommands.set)
+        scrollbarForCommands.config(command = self.commandsList.yview)
+        self.commandsList.place(x=250,y=20)
+        panel.place(x=70,y=200)
+        self.commandsPage.mainloop()
+
 
 if __name__ == '__main__':
     app = Application()
