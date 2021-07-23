@@ -140,7 +140,7 @@ class Application:
         domainLabel = tk.Label(self.putAuthKeyPage, text="Domains",font=self.GUI_FONT)
         capabilityLabel = tk.Label(self.putAuthKeyPage, text="Capabilities",font=self.GUI_FONT)
         delelgatedCapabilitiesLabel = tk.Label(self.putAuthKeyPage, text="Delegated Capabilities",font=self.GUI_FONT)
-        self.passwordEntry = tk.Entry(self.putAuthKeyPage, show='*')
+        self.passwordEntryForAuthKey = tk.Entry(self.putAuthKeyPage, show='*')
         self.confirmPasswordEntry = tk.Entry(self.putAuthKeyPage, show='*')
         self.objectIDEntryForPutAuthKey = tk.Entry(self.putAuthKeyPage)
         self.labelForPutAuthKey = tk.Entry(self.putAuthKeyPage)
@@ -150,13 +150,13 @@ class Application:
         instructionsForObjectIDEntry.pack()
         self.objectIDEntryForPutAuthKey.pack()
         instructionForPasswordEntry.pack()
-        self.passwordEntry.pack()
+        self.passwordEntryForAuthKey.pack()
         instructionsForConfirmPasswordEntry.pack()
         self.confirmPasswordEntry.pack()
         self.checkboxes = Checkbox(self.putAuthKeyPage)
         self.checkboxes.generateDomainCheckboxes(startx=70,starty=200,incrementx=40,incrementy=30,numRows=3)
         self.checkboxes.generateCapabilitiesCheckboxes(startx=70,starty=400,incrementx=200,incrementy=30,numRows=12)
-        self.checkboxes.generateCapabilitiesCheckboxes(startx=70,starty=1000,incrementx=200,incrementy=30,numRows=12)
+        self.checkboxes.generateDelegatedCapabilitiesCheckboxes(startx=70,starty=1000,incrementx=200,incrementy=30,numRows=12)
         domainLabel.place(x=70,y=180)
         capabilityLabel.place(x=70,y=380)
         delelgatedCapabilitiesLabel.place(x=70,y=980)
@@ -165,7 +165,14 @@ class Application:
         self.putAuthKeyPage.mainloop()
 
     def addAuthKeyToHSM(self):
-        pass
+        authPassword = self.passwordEntryForAuthKey.get()
+        if authPassword != self.confirmPasswordEntry.get():
+            messagebox.showerror(title="Password Mismatch", message="Passwords do not match. Try again")
+        else:
+            domainValue = self.checkboxes.convertDomainCheckboxToInt()
+            capabilitiesValue = self.checkboxes.convertCapabilitiesCheckboxToInt()
+            delegatedCapabilitiesValue = self.checkboxes.convertDelegatedCapabilitiesCheckboxToInt()
+            AuthenticationKey.put_derived(self.session, object_id = int(self.objectIDEntryForPutAuthKey.get()), label=self.labelForPutAuthKey.get(), domains=domainValue, capabilities=capabilitiesValue, delegated_capabilities=delegatedCapabilitiesValue,password=authPassword)
 
 def getVersionString(deviceVersion):
     versionString = "Device Version: "
