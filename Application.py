@@ -11,6 +11,7 @@ from yubihsm import YubiHsm
 from yubihsm.exceptions import YubiHsmAuthenticationError, YubiHsmConnectionError
 from yubihsm.defs import OBJECT
 from yubihsm.objects import AuthenticationKey
+from WrapKey import WrapKey
 
 class Application:
     
@@ -24,7 +25,10 @@ class Application:
         self.GUI_FONT = ('Helvetica',10,'bold')
         self.commandToWindowMapping = {
             "Get Device Info": self.getDeviceInfoWindow,
-            "Put Authentication Key": self.putAuthKeyWindow}
+            "Put Authentication Key": self.putAuthKeyWindow,
+            "Unwrap Data": self.decryptUsingWrapWindow,
+            "Wrap Data": self.encryptUsingWrapWindow}
+
         self.commandsForHSM = self.getHSMCommands()
         self.hsm = YubiHsm.connect(self.HSM_URL)
         self.createLoginPage()
@@ -173,6 +177,18 @@ class Application:
             capabilitiesValue = self.checkboxes.convertCapabilitiesCheckboxToInt()
             delegatedCapabilitiesValue = self.checkboxes.convertDelegatedCapabilitiesCheckboxToInt()
             AuthenticationKey.put_derived(self.session, object_id = int(self.objectIDEntryForPutAuthKey.get()), label=self.labelForPutAuthKey.get(), domains=domainValue, capabilities=capabilitiesValue, delegated_capabilities=delegatedCapabilitiesValue,password=authPassword)
+
+
+    def decryptUsingWrapWindow(self):
+        wrapWindow = WrapKey(session=self.session, title="Decrypt With Wrap Key")
+        wrapWindow.addSubmitButton(isEncrypt=False,xpos=600,ypos=100)
+        wrapWindow.page.mainloop()
+    
+    def encryptUsingWrapWindow(self):
+        wrapWindow = WrapKey(session=self.session,title="Encrypt With Wrap Key")
+        wrapWindow.addSubmitButton(isEncrypt=True,xpos=600,ypos=100)
+        wrapWindow.page.mainloop()
+
 
 def getVersionString(deviceVersion):
     versionString = "Device Version: "
