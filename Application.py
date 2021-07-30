@@ -11,6 +11,7 @@ from yubihsm import YubiHsm
 from yubihsm.exceptions import YubiHsmAuthenticationError, YubiHsmConnectionError
 from yubihsm.defs import OBJECT
 from yubihsm.objects import AuthenticationKey
+from KeyGenerationCheckbox import KeyGenerationCheckbox
 
 class Application:
     
@@ -24,7 +25,8 @@ class Application:
         self.GUI_FONT = ('Helvetica',10,'bold')
         self.commandToWindowMapping = {
             "Get Device Info": self.getDeviceInfoWindow,
-            "Put Authentication Key": self.putAuthKeyWindow}
+            "Put Authentication Key": self.putAuthKeyWindow,
+            "Generate Asymmetric Key": self.generateKey}
         self.commandsForHSM = self.getHSMCommands()
         self.hsm = YubiHsm.connect(self.HSM_URL)
         self.createLoginPage()
@@ -173,6 +175,20 @@ class Application:
             capabilitiesValue = self.checkboxes.convertCapabilitiesCheckboxToInt()
             delegatedCapabilitiesValue = self.checkboxes.convertDelegatedCapabilitiesCheckboxToInt()
             AuthenticationKey.put_derived(self.session, object_id = int(self.objectIDEntryForPutAuthKey.get()), label=self.labelForPutAuthKey.get(), domains=domainValue, capabilities=capabilitiesValue, delegated_capabilities=delegatedCapabilitiesValue,password=authPassword)
+            
+    def generateKey(self):
+        self.generateKeyPage = tk.Toplevel()
+        self.generateKeyPage.title('Key Generation')
+        self.generateKeyPage.resizable(0,0)
+        self.generateKeyPage.geometry("1800x1800")
+        scrollbar = tk.Scrollbar(self.generateKeyPage)
+        scrollbar.pack(side='right',fill='y')
+        self.KeyCheckboxes = KeyGenerationCheckbox(self.generateKeyPage)
+        self.KeyCheckboxes.generateDomainCheckboxes(startx=70,starty=200,incrementx=40,incrementy=30,numRows=3)
+        self.KeyCheckboxes.generateCapabilitiesCheckboxes(startx=70,starty=400,incrementx=200,incrementy=30,numRows=12)
+        self.KeyCheckboxes.generateDelegatedCapabilitiesCheckboxes(startx=70,starty=1000,incrementx=200,incrementy=30,numRows=12)
+        self.KeyCheckboxes.generateAlgorithmsCheckboxes(startx=70,starty=1600,incrementx=200,incrementy=30,numRows=12)
+        self.generateKeyPage.mainloop()
 
 def getVersionString(deviceVersion):
     versionString = "Device Version: "
